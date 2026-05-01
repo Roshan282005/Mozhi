@@ -17,6 +17,12 @@ import MessagesPage from "@/app/(explorer)/messages/page";
 import SessionsPage from "@/app/(explorer)/sessions/page";
 import SubscriptionsPage from "@/app/(explorer)/subscriptions/page";
 import AvailabilityPage from "@/app/(companion)/availability/page";
+import ProfileEditPage from "@/app/(companion)/profile/edit/page";
+import PhonePage from "@/app/(auth)/phone/page";
+import AuthCallbackPage from "@/app/auth/callback/page";
+import CourseDetailPage from "@/app/courses/[slug]/page";
+import LessonPage from "@/app/courses/[slug]/learn/[lessonId]/page";
+import SessionRoomPage from "@/app/(session)/room/[sessionId]/page";
 import OfflinePage from "@/app/offline/page";
 
 const queryClient = new QueryClient();
@@ -38,6 +44,12 @@ function Router() {
       <Route path="/sessions" component={SessionsPage} />
       <Route path="/subscriptions" component={SubscriptionsPage} />
       <Route path="/availability" component={AvailabilityPage} />
+      <Route path="/profile/edit" component={ProfileEditPage} />
+      <Route path="/phone" component={PhonePage} />
+      <Route path="/auth/callback" component={AuthCallbackPage} />
+      <Route path="/courses/:slug" component={CourseDetailPage} />
+      <Route path="/courses/:slug/learn/:lessonId" component={LessonPage} />
+      <Route path="/room/:sessionId" component={SessionRoomPage} />
       <Route path="/offline" component={OfflinePage} />
       <Route component={NotFound} />
     </Switch>

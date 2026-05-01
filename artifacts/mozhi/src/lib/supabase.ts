@@ -6,11 +6,12 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-a
 // Client-side Supabase client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Server-side Supabase client (for API routes)
+// Admin Supabase client — only use server-side (never expose the key client-side)
+// In this Vite/client-only app, falls back to anon key for safety
 export function createServerSupabaseClient() {
   return createClient(
     supabaseUrl,
-    import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey,
+    supabaseAnonKey,
     {
       auth: {
         autoRefreshToken: false,
