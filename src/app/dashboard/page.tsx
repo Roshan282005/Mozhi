@@ -68,18 +68,6 @@ export default function StudentDashboard() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login')
-    }
-  }, [user, authLoading, router])
-
-  useEffect(() => {
-    if (user) {
-      fetchDashboardData()
-    }
-  }, [user])
-
   const fetchDashboardData = async () => {
     setLoading(true)
 
@@ -94,7 +82,7 @@ export default function StudentDashboard() {
       .order('enrolled_at', { ascending: false })
       .limit(5)
 
-    if (enrollmentData) setEnrollments(enrollmentData as any)
+    if (enrollmentData) setEnrollments(enrollmentData as Enrollment[])
 
     const { data: certificateData } = await supabase
       .from('certificates')
@@ -106,7 +94,7 @@ export default function StudentDashboard() {
       .order('issued_at', { ascending: false })
       .limit(3)
 
-    if (certificateData) setCertificates(certificateData as any)
+    if (certificateData) setCertificates(certificateData as Certificate[])
 
     const { data: notificationData } = await supabase
       .from('notifications')
@@ -115,10 +103,22 @@ export default function StudentDashboard() {
       .order('created_at', { ascending: false })
       .limit(5)
 
-    if (notificationData) setNotifications(notificationData as any)
+    if (notificationData) setNotifications(notificationData as Notification[])
 
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login')
+    }
+  }, [user, authLoading, router])
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData()
+    }
+  }, [user])
 
   const getCourseProgress = (progress: Record<string, any>, totalLessons: number = 0) => {
     if (!progress || Object.keys(progress).length === 0) return 0
