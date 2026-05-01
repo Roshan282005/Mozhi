@@ -57,14 +57,6 @@ function CoursesContent() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  useEffect(() => {
-    fetchCategories()
-  }, [])
-
-  useEffect(() => {
-    fetchCourses()
-  }, [selectedCategory, selectedLevel, page])
-
   const fetchCategories = async () => {
     const { data } = await supabase
       .from('categories')
@@ -106,6 +98,14 @@ function CoursesContent() {
     }
     setLoading(false)
   }
+
+  useEffect(() => {
+    fetchCategories()
+  }, [])
+
+  useEffect(() => {
+    fetchCourses()
+  }, [selectedCategory, selectedLevel, page])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()

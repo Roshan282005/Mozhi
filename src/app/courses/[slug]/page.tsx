@@ -471,10 +471,6 @@ function CourseReviews({ courseId }: { courseId: string }) {
   const [reviews, setReviews] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchReviews()
-  }, [courseId])
-
   const fetchReviews = async () => {
     const { data } = await supabase
       .from('course_reviews')
@@ -489,6 +485,10 @@ function CourseReviews({ courseId }: { courseId: string }) {
     if (data) setReviews(data)
     setLoading(false)
   }
+
+  useEffect(() => {
+    fetchReviews()
+  }, [courseId])
 
   if (loading) {
     return <div>Loading reviews...</div>
