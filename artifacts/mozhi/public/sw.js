@@ -9,7 +9,7 @@ const STATIC_ASSETS = [
   '/offline',
   '/dashboard',
   '/courses',
-  '/icons/icon-192x192.png',
+  '/icons/icon-192x192.svg',
 ];
 
 self.addEventListener('install', (event) => {
@@ -107,8 +107,8 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'Mozhi';
   const options = {
     body: data.body || 'You have a new notification',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-72x72.png',
+    icon: '/icons/icon-192x192.svg',
+    badge: '/icons/icon-72x72.svg',
     vibrate: [100, 50, 100],
     data: {
       url: data.url || '/',
