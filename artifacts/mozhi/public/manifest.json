@@ -1,0 +1,20 @@
+{
+  "name": "Mozhi - Learn Without Limits",
+  "short_name": "Mozhi",
+  "description": "Online course learning platform - learn from expert instructors",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["education", "business"],
+  "prefer_related_applications": false,
+  "related_applications": []
+}

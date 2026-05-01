@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Mozhi - Tamil Cultural Platform"
+version = "1.0.0"
+id = "artifacts/mozhi"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25869
+
+[services.development]
+run = "pnpm --filter @workspace/mozhi run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/mozhi", "run", "build" ]
+publicDir = "artifacts/mozhi/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25869"
+BASE_PATH = "/"
