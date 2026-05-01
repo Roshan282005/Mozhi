@@ -93,20 +93,33 @@ router.put("/upload/video", requireAuth, async (req: Request, res: Response) => 
       .eq("id", (lesson as { id: string; section_id: string }).section_id)
       .single();
 
-    if (section) {
-      const courseId = (section as { course_id: string }).course_id;
-      const { data: course } = await supabase
-        .from("courses")
-        .select("teacher_id")
-        .eq("id", courseId)
-        .single();
+    // Fail closed: if any ownership lookup fails, deny the write
+    if (!section) {
+      return res.status(403).json({
+        success: false,
+        error: { code: "FORBIDDEN", message: "Could not verify lesson ownership." },
+      });
+    }
 
-      if (course && (course as { teacher_id: string }).teacher_id !== userId) {
-        return res.status(403).json({
-          success: false,
-          error: { code: "FORBIDDEN", message: "You do not own this lesson." },
-        });
-      }
+    const courseId = (section as { course_id: string }).course_id;
+    const { data: course, error: courseError } = await supabase
+      .from("courses")
+      .select("teacher_id")
+      .eq("id", courseId)
+      .single();
+
+    if (courseError || !course) {
+      return res.status(403).json({
+        success: false,
+        error: { code: "FORBIDDEN", message: "Could not verify course ownership." },
+      });
+    }
+
+    if ((course as { teacher_id: string }).teacher_id !== userId) {
+      return res.status(403).json({
+        success: false,
+        error: { code: "FORBIDDEN", message: "You do not own this lesson." },
+      });
     }
 
     await supabase
