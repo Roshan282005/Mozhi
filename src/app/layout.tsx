@@ -7,12 +7,14 @@ const lora = Lora({
   variable: "--font-heading",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 })
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 })
 
 export const metadata: Metadata = {
