@@ -45,6 +45,8 @@ function Router() {
       <Route path="/subscriptions" component={SubscriptionsPage} />
       <Route path="/availability" component={AvailabilityPage} />
       <Route path="/profile/edit" component={ProfileEditPage} />
+      <Route path="/companion/profile/edit" component={ProfileEditPage} />
+      <Route path="/subscribers" component={SubscriptionsPage} />
       <Route path="/phone" component={PhonePage} />
       <Route path="/auth/callback" component={AuthCallbackPage} />
       <Route path="/courses/:slug" component={CourseDetailPage} />

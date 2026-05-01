@@ -1,8 +1,38 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import * as admin from "firebase-admin";
 
 const router: IRouter = Router();
+
+// Initialize Firebase Admin SDK (requires FIREBASE_PROJECT_ID and FIREBASE_SERVICE_ACCOUNT env vars)
+let firebaseApp: admin.app.App | null = null;
+
+function getFirebaseApp(): admin.app.App | null {
+  if (firebaseApp) return firebaseApp;
+  const projectId = process.env["FIREBASE_PROJECT_ID"];
+  const serviceAccountJson = process.env["FIREBASE_SERVICE_ACCOUNT"];
+  if (!projectId) return null;
+  try {
+    const existingApp = admin.apps.length > 0 ? admin.apps[0] : null;
+    if (existingApp) {
+      firebaseApp = existingApp;
+      return firebaseApp;
+    }
+    if (serviceAccountJson) {
+      const serviceAccount = JSON.parse(serviceAccountJson);
+      firebaseApp = admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        projectId,
+      });
+    } else {
+      firebaseApp = admin.initializeApp({ projectId });
+    }
+    return firebaseApp;
+  } catch {
+    return null;
+  }
+}
 
 const supabaseUrl = process.env["SUPABASE_URL"] || process.env["NEXT_PUBLIC_SUPABASE_URL"] || "";
 const supabaseAnonKey = process.env["SUPABASE_ANON_KEY"] || process.env["NEXT_PUBLIC_SUPABASE_ANON_KEY"] || "";
@@ -48,8 +78,8 @@ const phoneSchema = z.object({
 });
 
 const firebaseLoginSchema = z.object({
-  idToken: z.string().optional(),
-  email: z.string().email(),
+  idToken: z.string().min(1, "Firebase ID token is required"),
+  email: z.string().email().optional(),
   displayName: z.string().optional(),
   photoURL: z.string().optional(),
   userType: z.enum(["student", "teacher"]).optional(),
@@ -285,7 +315,46 @@ router.post("/auth/phone", async (req: Request, res: Response) => {
 
 router.post("/auth/firebase-login", async (req: Request, res: Response) => {
   try {
-    const { email, displayName, photoURL, userType } = firebaseLoginSchema.parse(req.body);
+    const body = firebaseLoginSchema.parse(req.body);
+    const { idToken, userType } = body;
+
+    // Require and verify the Firebase ID token server-side
+    if (!idToken) {
+      return res.status(401).json({
+        success: false,
+        error: { code: "MISSING_TOKEN", message: "Firebase ID token is required." },
+      });
+    }
+
+    const app = getFirebaseApp();
+    if (!app) {
+      return res.status(503).json({
+        success: false,
+        error: { message: "Firebase is not configured on this server. Set FIREBASE_PROJECT_ID." },
+      });
+    }
+
+    let verifiedToken: admin.auth.DecodedIdToken;
+    try {
+      verifiedToken = await admin.auth(app).verifyIdToken(idToken);
+    } catch (tokenError: any) {
+      return res.status(401).json({
+        success: false,
+        error: { code: "INVALID_TOKEN", message: "Firebase ID token is invalid or expired." },
+      });
+    }
+
+    // Use token claims — never trust client-supplied email/name directly
+    const email = verifiedToken.email;
+    const displayName = verifiedToken.name || body.displayName;
+    const photoURL = verifiedToken.picture || body.photoURL;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: { code: "NO_EMAIL", message: "Firebase token does not include an email address." },
+      });
+    }
 
     if (!supabaseUrl || !supabaseServiceKey) {
       return res.status(503).json({
