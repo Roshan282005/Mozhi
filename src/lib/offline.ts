@@ -35,15 +35,7 @@ export function useOfflineStorage() {
     }
   }, [])
 
-  const checkStorage = async () => {
-    if ('storage' in navigator && 'estimate' in navigator.storage) {
-      const estimate = await navigator.storage.estimate()
-      setStorageUsed(estimate.usage || 0)
-      setMaxStorage(estimate.quota || 0)
-    }
-  }
-
-  const loadCachedLessons = async () => {
+  const loadCachedLessons = useCallback(async () => {
     try {
       const cache = await caches.open(VIDEO_CACHE)
       const requests = await cache.keys()
@@ -60,7 +52,15 @@ export function useOfflineStorage() {
     } catch (e) {
       console.error('Error loading cached lessons:', e)
     }
-  }
+  }, [])
+
+  const checkStorage = useCallback(async () => {
+    if ('storage' in navigator && 'estimate' in navigator.storage) {
+      const estimate = await navigator.storage.estimate()
+      setStorageUsed(estimate.usage || 0)
+      setMaxStorage(estimate.quota || 0)
+    }
+  }, [])
 
   const cacheLesson = useCallback(async (lessonId: string, courseId: string, title: string, videoUrl: string) => {
     if (!videoUrl) return false

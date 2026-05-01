@@ -8,9 +8,9 @@ export default function OfflinePage() {
     <div className="min-h-screen flex flex-col items-center justify-center p-4 text-center">
       <div className="max-w-md">
         <div className="text-6xl mb-6">📡</div>
-        <h1 className="text-2xl font-bold mb-4">You're Offline</h1>
+        <h1 className="text-2xl font-bold mb-4">You&apos;re Offline</h1>
         <p className="text-muted-foreground mb-6">
-          It looks like you've lost your internet connection. 
+          It looks like you&apos;ve lost your internet connection. 
           Some content may still be available from your offline downloads.
         </p>
         <div className="space-y-3">

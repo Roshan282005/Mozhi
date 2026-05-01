@@ -59,18 +59,6 @@ export default function TeacherDashboard() {
   })
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (!authLoading && (!user || user.role !== 'TEACHER')) {
-      router.push('/login')
-    }
-  }, [user, authLoading, router])
-
-  useEffect(() => {
-    if (user && user.role === 'TEACHER') {
-      fetchTeacherData()
-    }
-  }, [user])
-
   const fetchTeacherData = async () => {
     setLoading(true)
 
@@ -100,6 +88,18 @@ export default function TeacherDashboard() {
 
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (!authLoading && (!user || user.role !== 'TEACHER')) {
+      router.push('/login')
+    }
+  }, [user, authLoading, router])
+
+  useEffect(() => {
+    if (user && user.role === 'TEACHER') {
+      fetchTeacherData()
+    }
+  }, [user])
 
   if (authLoading || !user || user.role !== 'TEACHER') {
     return (
